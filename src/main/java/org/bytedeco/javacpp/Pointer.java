@@ -614,6 +614,21 @@ public class Pointer implements AutoCloseable {
         return (P)this;
     }
 
+    public static void attemptClearMemory(boolean doGc, boolean doTrim, Integer sleep, int numIter) {
+            synchronized (DeallocatorThread.class) {
+        for (int i=0; i<numIter; i++) {
+            try {
+	        if (doGc) System.gc();
+	        if (sleep != null) Thread.sleep(sleep);
+	        if (doTrim) trimMemory();
+            }  catch (InterruptedException ex) {
+                    // reset interrupt to be nice
+                    Thread.currentThread().interrupt();
+                    break;
+            } 
+        }}
+    }
+
     /** Returns {@link #deallocator}. */
     protected Deallocator deallocator() {
         return deallocator;
